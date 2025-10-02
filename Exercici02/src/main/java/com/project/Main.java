@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -13,19 +12,22 @@ public class Main extends Application {
     final int WINDOW_HEIGHT = 400;
     final int MIN_WIDTH = 300;
     final int MIN_HEIGHT = 600;
+  
  
     public static void main(String[] args) {
+        
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-
+        
         UtilsViews.parentContainer.setStyle("-fx-font: 14 arial;");
         UtilsViews.addView(getClass(), "Desktop_1", "/assets/layout_desktop.fxml");
         //UtilsViews.addView(getClass(), "Desktop_2", "/assets/layout_desktop_2.fxml");
         UtilsViews.addView(getClass(), "Mobile_1", "/assets/layout_mobile.fxml");
-        //UtilsViews.addView(getClass(), "Mobile_2", "/assets/layout_mobile_2.fxml");
+        UtilsViews.addView(getClass(), "Mobile_2", "/assets/layout_mobile_2.fxml");
+        UtilsViews.addView(getClass(), "Mobile_3", "/assets/layout_mobile_3.fxml");
 
         Scene scene = new Scene(UtilsViews.parentContainer);
 
@@ -45,25 +47,28 @@ public class Main extends Application {
         stage.setHeight(WINDOW_HEIGHT);
         stage.show();
 
-        // Afegeix un listener per detectar canvis en les dimensions de la finestra
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("Width changed: " + newVal);
-        });
+        // // Afegeix un listener per detectar canvis en les dimensions de la finestra
+        // stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+        //     System.out.println("Width changed: " + newVal);
+        // });
 
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("Height changed: " + newVal);
-        });
+        // stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+        //     System.out.println("Height changed: " + newVal);
+        // });
 
-        // Add icon only if not Mac
-        if (!System.getProperty("os.name").contains("Mac")) {
-            Image icon = new Image("file:/icons/icon.png");
-            stage.getIcons().add(icon);
-        }
+        // // Add icon only if not Mac
+        // if (!System.getProperty("os.name").contains("Mac")) {
+        //     Image icon = new Image("file:/icons/icon.png");
+        //     stage.getIcons().add(icon);
+        // }
     }
 
     private void _setLayout(int width) {
         if (width < 600) {
-            UtilsViews.setView("Mobile_1");
+            if (!UtilsViews.getActiveView().startsWith("Mobile")){
+                UtilsViews.setView("Mobile_1");
+            }
+            
         } else {
             UtilsViews.setView("Desktop_1");
         }
