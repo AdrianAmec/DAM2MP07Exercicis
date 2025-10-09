@@ -31,6 +31,14 @@ public class ControllerListItem{
     // }
     
 
+    public void alinearMsg(){
+        img.setLayoutX(445);
+        
+    }
+
+    public ControllerListItem(){
+        
+    }
     public void setText(String text) {
         this.text.setText(text);
     }

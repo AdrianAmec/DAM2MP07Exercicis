@@ -80,7 +80,7 @@ public class Controller implements Initializable {
                 Platform.runLater(() -> { textInfo.setText("Error loading model."); setButtonsIdle(); });
                 return;
             }
-            executeTextRequest(TEXT_MODEL, question, true);
+            executeTextRequest(TEXT_MODEL, question, true,false);
         });
     }
 
@@ -95,7 +95,7 @@ public class Controller implements Initializable {
                 Platform.runLater(() -> { textInfo.setText("Error loading model."); setButtonsIdle(); });
                 return;
             }
-            executeTextRequest(TEXT_MODEL, "Tell me a haiku.", false);
+            executeTextRequest(TEXT_MODEL, "Tell me a haiku.", false,false);
         });
     }
 
@@ -159,7 +159,7 @@ public class Controller implements Initializable {
     // --- Request helpers ---
 
     // Text-only (stream or not)
-    private void executeTextRequest(String model, String prompt, boolean stream) {
+    private void executeTextRequest(String model, String prompt, boolean stream, boolean image) {
         JSONObject body = new JSONObject()
             .put("model", model)
             .put("prompt", prompt)
@@ -171,9 +171,13 @@ public class Controller implements Initializable {
             .header("Content-Type", "application/json")
             .POST(BodyPublishers.ofString(body.toString()))
             .build();
-
+        if(!image){
+            ControllerListItem controllerList = getMsg(true);
+            controllerList.setText(prompt);
+        }
         if (stream) {
-            Platform.runLater(() -> textInfo.setText("Wait stream ... " + prompt));
+            
+            Platform.runLater(() -> textInfo.setText("Wait stream ... "));
             isFirst = true;
 
             streamRequest = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
@@ -194,7 +198,7 @@ public class Controller implements Initializable {
             completeRequest = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     String responseText = safeExtractTextResponse(response.body());
-                    Platform.runLater(() -> { textInfo.setText(responseText); setButtonsIdle(); });
+                    //Platform.runLater(() -> { textInfo.setText(responseText); setButtonsIdle(); });
                     return response;
                 })
                 .exceptionally(e -> {
@@ -237,7 +241,9 @@ public class Controller implements Initializable {
                 }
 
                 final String toShow = msg;
-                Platform.runLater(() -> { textInfo.setText(toShow); setButtonsIdle(); });
+
+                executeTextRequest(TEXT_MODEL,"te hare preguntas sobre la siguiente descripcion de imagen."+msg,true,true);
+                //Platform.runLater(() -> { textInfo.setText(toShow); setButtonsIdle(); });
                 return resp;
             })
             .exceptionally(e -> {
@@ -251,6 +257,8 @@ public class Controller implements Initializable {
     private void handleStreamResponse() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(currentInputStream, StandardCharsets.UTF_8))) {
             String line;
+            //textInfo.setText(resource.toString());
+            ControllerListItem controllerList = getMsg(false);
             while ((line = reader.readLine()) != null) {
                 if (isCancelled.get()) break;
                 if (line.isBlank()) continue;
@@ -259,18 +267,13 @@ public class Controller implements Initializable {
                 String chunk = jsonResponse.optString("response", "");
                 if (chunk.isEmpty()) continue;
 
-                URL resource = this.getClass().getResource("/../../../resources/assets/listitem.fxml");
-                
-                textInfo.setText(resource.toString());
-                ControllerListItem controllerList = getMsg(yPane,resource);
-
-                
                 if (isFirst) {
                     Platform.runLater(() -> controllerList.setText(chunk));
                     isFirst = false;
                 } else {
                     Platform.runLater(() -> controllerList.setText(controllerList.getText() + chunk));
                 }
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -396,24 +399,56 @@ public class Controller implements Initializable {
         return true;
     }
 
-    public ControllerListItem getMsg(VBox yPane,URL resource){
-        ControllerListItem msg = null;
+    public ControllerListItem getMsg(Boolean user){
+        
+        URL resource = this.getClass().getResource("/assets/listItem.fxml");
+        
         try {
         
         //textTest.setText("Paso 1");
         FXMLLoader loader = new FXMLLoader(resource);
         //textTest.setText("Paso 2");
-        Parent itemTemplate = loader.load();
+
+        //Parent itemTemplate = loader.load();
+
+        
+
+        ControllerListItem controllerList = new ControllerListItem();
         //textTest.setText("Paso 3");
-        msg = loader.getController();
-        textTest.setText("Paso 4");
-        yPane.getChildren().add(itemTemplate);
+        
+
+        loader.setController(controllerList);
+
+        //textTest.setText("Paso 4");
+
+        Parent itemTemplate = loader.load();
+        
+        if(user){
+            controllerList.setImatge("/icons/user.png");
+            controllerList.alinearMsg();
+
+
+        }else{
+            controllerList.setImatge("/icons/ieti.png");
+
+        }
+
+        Platform.runLater(()-> {
+            try{
+                yPane.getChildren().add(itemTemplate);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        });
+        
+
         textTest.setText("Paso 5");
         textTest.setText("Fssdasdasd");
+        return controllerList;
         } catch (Exception e) {
-            
+            e.printStackTrace();
             // TODO: handle exception
         }
-        return msg;
+        return null;
     }
 }

@@ -5,10 +5,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="select" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="85.0" prefWidth="428.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.project.ControllerListItem">
+<AnchorPane fx:id="select" minHeight="-Infinity" prefWidth="555.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Text fx:id="text" layoutX="129.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="326.13671684265137" />
-      <ImageView fx:id="img" fitHeight="74.0" fitWidth="85.0" layoutX="27.0" layoutY="6.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="316.2" AnchorPane.topAnchor="6.0" />
+      <Pane layoutX="127.0" layoutY="6.0" prefWidth="301.0" style="-fx-background-color: #DCF8C6; -fx-background-radius: 15; -fx-padding: 8 12;" AnchorPane.topAnchor="5.0">
+         <children>
+            <Text fx:id="text" layoutX="28.0" layoutY="27.0" strokeLineCap="ROUND" style="-fx-background-color: transparent;" text="Text" wrappingWidth="245.0" />
+         </children>
+      </Pane>
+      <ImageView fx:id="img" fitHeight="74.0" fitWidth="85.0" layoutX="29.0" layoutY="3.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="3.0" />
       <Pane prefHeight="0.0" prefWidth="307.0" style="-fx-background-color: #aaaaaa;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
    </children>
 </AnchorPane>
