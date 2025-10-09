@@ -157,7 +157,7 @@ public class ControllerDesktop extends Controller implements Initializable{
 
          // Obtenir el recurs del template .fxml
         URL resource = this.getClass().getResource("/assets/listitem.fxml");
-
+        System.out.println("\n\n\n\n"+resource+"\n\n\n\n");
         // Esborrar la llista anterior
         yPane.getChildren().clear();
 

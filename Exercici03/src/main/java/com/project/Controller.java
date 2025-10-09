@@ -1,7 +1,10 @@
 package com.project;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
@@ -26,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.stage.FileChooser;
+import javafx.scene.layout.VBox;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,7 +41,9 @@ public class Controller implements Initializable {
     private static final String VISION_MODEL = "llava-phi3";
 
     @FXML private Button buttonCallStream, buttonCallComplete, buttonBreak, buttonPicture;
-    @FXML private Text textInfo;
+    @FXML private Text textInfo,textTest;
+    @FXML private TextField textInput;
+    @FXML private VBox yPane;
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private CompletableFuture<HttpResponse<InputStream>> streamRequest;
@@ -57,7 +63,15 @@ public class Controller implements Initializable {
 
     @FXML
     private void callStream(ActionEvent event) {
+        
+        if(!isTextInput()){
+            return;
+        }
+        String question=textInput.getText();
+
+        textInput.setText("");
         textInfo.setText("");
+
         setButtonsRunning();
         isCancelled.set(false);
 
@@ -66,7 +80,7 @@ public class Controller implements Initializable {
                 Platform.runLater(() -> { textInfo.setText("Error loading model."); setButtonsIdle(); });
                 return;
             }
-            executeTextRequest(TEXT_MODEL, "Why is the sky blue?", true);
+            executeTextRequest(TEXT_MODEL, question, true);
         });
     }
 
@@ -245,11 +259,17 @@ public class Controller implements Initializable {
                 String chunk = jsonResponse.optString("response", "");
                 if (chunk.isEmpty()) continue;
 
+                URL resource = this.getClass().getResource("/../../../resources/assets/listitem.fxml");
+                
+                textInfo.setText(resource.toString());
+                ControllerListItem controllerList = getMsg(yPane,resource);
+
+                
                 if (isFirst) {
-                    Platform.runLater(() -> textInfo.setText(chunk));
+                    Platform.runLater(() -> controllerList.setText(chunk));
                     isFirst = false;
                 } else {
-                    Platform.runLater(() -> textInfo.setText(textInfo.getText() + chunk));
+                    Platform.runLater(() -> controllerList.setText(controllerList.getText() + chunk));
                 }
             }
         } catch (Exception e) {
@@ -368,5 +388,32 @@ public class Controller implements Initializable {
                 return httpClient.sendAsync(preloadReq, HttpResponse.BodyHandlers.ofString())
                         .thenAccept(r -> { /* warmed */ });
             });
+    }
+    public boolean isTextInput(){
+        if (textInput.getText().equals("")){
+            return false;
+        }
+        return true;
+    }
+
+    public ControllerListItem getMsg(VBox yPane,URL resource){
+        ControllerListItem msg = null;
+        try {
+        
+        //textTest.setText("Paso 1");
+        FXMLLoader loader = new FXMLLoader(resource);
+        //textTest.setText("Paso 2");
+        Parent itemTemplate = loader.load();
+        //textTest.setText("Paso 3");
+        msg = loader.getController();
+        textTest.setText("Paso 4");
+        yPane.getChildren().add(itemTemplate);
+        textTest.setText("Paso 5");
+        textTest.setText("Fssdasdasd");
+        } catch (Exception e) {
+            
+            // TODO: handle exception
+        }
+        return msg;
     }
 }
